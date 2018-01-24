@@ -1,123 +1,189 @@
 use <wheels.scad>;
+use <components/zwl_fp180ino.scad>;
+include <components/zwl_fp180ino_constants.scad>
+use <components/batteries.scad>;
 
-$fn=48;
+$fn=128;
 
-usable_shaft_length = 11.1;
-unusable_shaft_length = 1.8;
+print();
 
-shaft_offset = 15;
-
-motor_box_height = 33;
-motor_box_width  = 46.5;
-motor_box_depth  = 25.75;
-
-gear_diff = 22.03;
-
-motor_mount();
-
-motor();
-
-//rear_axle();
-
-module rear_axle() {
-  rotate([90,70,0])
-  translate([gear_diff,0,0])
-  rear_axle_shaft_2();
+module print() {
+  union() {
+    translate([0,-40,0])
+    rotate([90,0,0]) motor_mount();
+    translate([0,40,0])
+    mirror([0,1,0])
+    rotate([90,0,0]) motor_mount();
+  }
+  rotate([90,0,0]) frame();
+  rotate([180,0,0]) floor();
+  union() {
+    translate([0,120,0])
+    rotate([-90,0,0]) main_wheel();
+    !rotate([-90,0,0]) main_wheel();
+  }
+  union() {
+    translate([0,30,0])
+    rotate([-90,0,0]) collar();
+    rotate([-90,0,0]) collar();
+  }
 }
 
-module motor_mount() {
+left();
+right();
+battery();
+frame();
+floor();
+
+// how far apart left and right are, measured from wheel origin
+separation = 110;
+//separation = 30;
+
+motorMountHeight = MOTOR_BOX_HEIGHT + 24;
+motorMountWidth = MOTOR_BOX_WIDTH + 10;
+motorMountDepth = 8;
+motorMountOffset = .5;
+motorMountProtrusion = 10;
+
+frameLength = 110;
+frameDepth  = separation-motorMountProtrusion;
+frameHeight = motorMountHeight;
+beamSize    = 8;
+frameOffset = 25;
+
+floorDepth = 2;
+
+module right() {
+  translate([0,separation,0])
+  mirror([0,1,0])
+  left();
+}
+
+module left() {
+  color("grey")
+  motor_mount();
+  motor();
+  wheel();
+}
+
+module frame() {
+  //color("gold")
   difference() {
-    union() {
-      translate([-shaft_offset-.75, 0, -(motor_box_height+1.5)/2]) {
-        frame = 18;
-        difference() {
-          cube([motor_box_width+1.5,8.5,motor_box_height+1.5]);
-          translate([frame/2, 0, frame/2 + .5])
-          cube([motor_box_width-frame,5,motor_box_height-frame]);
-        }
+    translate([-frameOffset,(separation-frameDepth)/2,-motorMountHeight/2])
+    difference() {
+      cube([frameLength, frameDepth, frameHeight]);
+      
+      union() {
+        translate([-.5, beamSize, beamSize])
+        cube([frameLength+1, frameDepth-2*beamSize, frameHeight-2*beamSize]);
+        translate([beamSize, -.5, beamSize])
+        cube([frameLength-2*beamSize, frameDepth+1, frameHeight-2*beamSize]);
+        translate([beamSize, beamSize, -.5])
+        cube([frameLength-2*beamSize, frameDepth-2*beamSize, frameHeight+1]);
       }
     }
-    motor();
+    rods();
+  }
+}
+
+module rods() {
+  screwDiameter = 4.6;
+  color("grey")
+  translate([-frameOffset,(separation-frameDepth)/2,-motorMountHeight/2])
+  for (i = [0:18:frameLength-18*2]) {
+    translate([beamSize/2+14+i,140,beamSize/2])
+    rotate([90,0,0])
+    cylinder(h=150,r=screwDiameter/2);
+
+    translate([beamSize/2+14+i,140,beamSize/2 + frameHeight-beamSize])
+    rotate([90,0,0])
+    cylinder(h=150,r=screwDiameter/2);
   }
 }
 
 
-module motor() {
-  color("silver") {
-    motor_box();
-    shaft();
-    translate([8,4,10])
-    scale([2,3,3])
-    arrow();
-    
-    cylH = 31;
-    cylD = 24;
-    hull() {
-      translate([
-        motor_box_width-shaft_offset,
-        unusable_shaft_length+cylD/2+3,
-        motor_box_height/2 - cylD/2 - 2.5
-      ])
-      rotate([0,90,0])
-      cylinder(h=cylH,r=cylD/2);
-      translate([
-        motor_box_width-shaft_offset,
-        unusable_shaft_length+cylD/2+3,
-        -motor_box_height/2 + cylD/2 + 2.5
-      ])
-      rotate([0,90,0])
-      cylinder(h=cylH,r=cylD/2);
+
+// tabs & screwholes
+// notches for corners
+// front skid
+module floor() {
+  floorWidth = frameDepth - 1;
+  floorLength = frameLength - 1;
+  difference() {
+    color("DarkKhaki")
+    translate([
+      -frameOffset,
+      (separation-floorWidth)/2,
+      -motorMountHeight/2 + beamSize + .1
+    ]) {
+      difference() {
+        union() {
+          cube([floorLength, floorWidth, floorDepth]);
+          translate([beamSize+2.5, beamSize-.25, -beamSize])
+          cube([floorLength-beamSize*2-4, 1, beamSize]);
+          translate([beamSize+2.5, floorWidth-beamSize+.25, -beamSize])
+          cube([floorLength-beamSize*2-4, 1, beamSize]);
+          strutHeight = 45 - motorMountHeight/2 + beamSize + floorDepth;
+          translate([floorLength - beamSize-1,floorWidth/2,-strutHeight])
+          cylinder(h=strutHeight,r=2.5);
+        }
+        notchSize = beamSize+.25;
+        translate([-.1,-.1,-.1])
+        cube([notchSize,notchSize,notchSize]);
+        translate([floorLength-notchSize+.1,-.1,-.1])
+        cube([notchSize,notchSize,notchSize]);
+        translate([floorLength-notchSize+.1,floorWidth-notchSize+.1,-.1])
+        cube([notchSize,notchSize,notchSize]);
+        translate([-.1,floorWidth-notchSize+.1,-.1])
+        cube([notchSize,notchSize,notchSize]);
+      }
+    }
+    union () {
+      rods();
     }
   }
 }
 
-module motor_box() {
-  m3radius = 3.5/2;
-  translate([-shaft_offset, unusable_shaft_length, -motor_box_height/2])
-  cube([motor_box_width, motor_box_depth, motor_box_height]);
 
-  translate([-9.3,4,-9.1])
-  rotate([90,0,0])
-  cylinder(h=8, r=m3radius);
-  
-  translate([-9.3,4,9.1])
-  rotate([90,0,0])
-  cylinder(h=8, r=m3radius);
-  
-  translate([24,4,-9.1])
-  rotate([90,0,0]) 
-  cylinder(h=8, r=m3radius);
-
-  translate([24,4,9.1])
-  rotate([90,0,0])
-  cylinder(h=8, r=m3radius);
+module lid() {
 }
 
-
-/*
- * No longer using this
- */
-module gears() {
-  // The gears will fit in a 6mm wide gearbox
-  // (which is too small, so adjust)
-  rotate([90,70,0]) {
-    translate([0,0,.5+.05])
-    gear1();
-
-    translate([gear_diff,0,0])
-    gear2();
-  }
+module battery() {
+  translate([-20,(separation-45)/2,-15])
+  aa6holder();
 }
 
-
-
-
-module shaft() {
+// notches for frames
+// screwholes
+// holes
+module motor_mount() {
+  frame=18;
   difference() {
-    translate([0,unusable_shaft_length,0])
-    rotate([90,0,0])
-    cylinder(h=usable_shaft_length + unusable_shaft_length,r=3);
-    translate([2,-usable_shaft_length,-3])
-    cube([3,usable_shaft_length,6]);
+    union() {
+      difference() {
+        translate([-(motorMountWidth-MOTOR_BOX_WIDTH)/2 - SHAFT_OFFSET+3, motorMountOffset, -motorMountHeight/2])
+        cube([motorMountWidth, motorMountDepth, motorMountHeight]);
+        translate([-SHAFT_OFFSET+frame/2,-.05, -MOTOR_BOX_HEIGHT/2+frame/2])
+        cube([MOTOR_BOX_WIDTH-frame, 5.02, MOTOR_BOX_HEIGHT-frame]);
+      }
+    }
+    union() {
+      motor();
+      rods();
+      
+      translate([
+        -(motorMountWidth-MOTOR_BOX_WIDTH)/2 - SHAFT_OFFSET+3 - .01,
+        (separation-frameDepth)/2 - .25,
+        -motorMountHeight/2 - .01
+      ])
+      cube([motorMountWidth+.02,beamSize + .01,beamSize+floorDepth+.5]);
+      
+      translate([
+        -(motorMountWidth-MOTOR_BOX_WIDTH)/2 - SHAFT_OFFSET+3,
+        (separation-frameDepth)/2 - .25,
+        motorMountHeight/2-beamSize-.5
+      ])
+      cube([motorMountWidth,beamSize,beamSize+.51]);
+    }
   }
 }

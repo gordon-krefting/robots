@@ -69,7 +69,7 @@ module shaftSocket(diameter=SHAFT_DIAMETER) {
   }
 }
 
-
+// TODO double-check those 5.5s! (After using a real screw...)
 module motor_box() {
   m3radius = 3.5/2;
   translate([-SHAFT_OFFSET, UNUSABLE_SHAFT_LENGTH, -MOTOR_BOX_HEIGHT/2])
@@ -77,19 +77,19 @@ module motor_box() {
 
   translate([-9.3,4,-9.1])
   rotate([90,0,0])
-  cylinder(h=8, r=m3radius);
+  cylinder(h=5.5, r=m3radius);
   
   translate([-9.3,4,9.1])
   rotate([90,0,0])
-  cylinder(h=8, r=m3radius);
+  cylinder(h=5.5, r=m3radius);
   
   translate([24,4,-9.1])
   rotate([90,0,0]) 
-  cylinder(h=8, r=m3radius);
+  cylinder(h=5.5, r=m3radius);
 
   translate([24,4,9.1])
   rotate([90,0,0])
-  cylinder(h=8, r=m3radius);
+  cylinder(h=5.5, r=m3radius);
 }
 
 module shaft() {

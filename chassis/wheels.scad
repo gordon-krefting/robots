@@ -1,6 +1,89 @@
-use <components/shaft_socket.scad>
+use <components/zwl_fp180ino.scad>;
+include <components/zwl_fp180ino_constants.scad>
 
-$fn=64;
+
+//$fn=128;
+
+collar();
+
+main_wheel();
+
+module wheel() {
+  color("DodgerBlue", .2)
+  main_wheel();
+  color("DodgerBlue", .6)
+  collar();
+}
+
+module collar() {
+  difference() {
+    rotate([90,0,0])
+    union() {
+      translate([0,0,.01])
+      cylinder(h=2, r=8);
+    }
+    shaftSocket();
+  }
+}
+
+module main_wheel() {
+  translate([0,4,0])
+  difference() {
+    rotate([90,0,0]) {
+      union() {
+        // hub
+        translate([0,0,8])
+        cylinder(h=8, r=6);
+        
+        // tire
+        translate([0,0,6])
+        difference() {
+          cylinder(h=18, r=45);
+          translate([0,0,-.1])
+          cylinder(h=18.2, r=44);
+        }
+        
+        // spokes
+        translate([0,0,6]) {
+          difference() {
+            cylinder(h=16, r=44);
+            translate([0, 0, 95 + 5])
+            sphere(95);
+            for (a = [0:60:300]) {
+              rotate([0,0,a])
+              translate([28,0,-.1])
+              cylinder(h=20,r=12);
+            }
+          }
+        }
+      }
+    }
+    translate([0,-5.99,0])
+    shaftSocket();
+  }
+}
+
+
+
+
+/*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 gear_diff = 22.03;
 gearDepth = 7;
@@ -113,4 +196,4 @@ module rear_axle_socket() {
   }
 }
 
-
+*/
