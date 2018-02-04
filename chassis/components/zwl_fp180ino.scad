@@ -3,9 +3,25 @@ include <zwl_fp180ino_constants.scad>
  *  Don't know exactly what this motor is, but it says ZWL-FP180ino on it
  *
  */
- 
+
+
+*printTest();
+
+module printTest() {
+  difference() {
+    translate([-5,-5,-5])
+    cube([70,5,10]);
+    for (o = [0:.1:.5]) {
+      translate([o*100,0,0])
+      shaftSocket($fn=32, flatPartOffset=2-o);
+      echo(2-o);
+    }
+  }
+}
+
+
 translate([50,0,0])
-motor($fn=32);
+motor($fn=96);
 
 shaftSocket($fn=32);
 
@@ -25,22 +41,18 @@ module motor() {
       SHAFT_DIAMETER
     );
     
-    translate([8,4,10])
-    scale([2,3,3])
-    arrow();
-    
     cylH = 31;
     cylD = 24;
     hull() {
       translate([
-        MOTOR_BOX_WIDTH-SHAFT_OFFSET,
+        MOTOR_BOX_WIDTH-SHAFT_OFFSET-.001,
         UNUSABLE_SHAFT_LENGTH+cylD/2+3,
         MOTOR_BOX_HEIGHT/2 - cylD/2 - 2.5
       ])
       rotate([0,90,0])
       cylinder(h=cylH,r=cylD/2);
       translate([
-        MOTOR_BOX_WIDTH-SHAFT_OFFSET,
+        MOTOR_BOX_WIDTH-SHAFT_OFFSET-.001,
         UNUSABLE_SHAFT_LENGTH+cylD/2+3,
         -MOTOR_BOX_HEIGHT/2 + cylD/2 + 2.5
       ])
@@ -54,18 +66,19 @@ module motor() {
  * The "usable" part of the shaft, sized for subtraction to make a socket.
  * The opening of the socket is widened a bit for easier assembly.
  */
-module shaftSocket(diameter=SHAFT_DIAMETER) {
+module shaftSocket(diameter=SHAFT_DIAMETER, flatPartOffset=1.7) {
   color("grey") {
     intersection() {
       shaft(USABLE_SHAFT_LENGTH,
         UNUSABLE_SHAFT_LENGTH,
-        diameter
+        diameter,
+        flatPartOffset
       );
       translate([-8,-16,-8])
       cube([16,16,16]);
     }
     rotate([90,0,0])
-    cylinder(h=4, r2=2, r1=(diameter+1)/2);
+    cylinder(h=2, r2=2, r1=(diameter+1)/2);
   }
 }
 
@@ -75,11 +88,13 @@ module motor_box() {
   translate([-SHAFT_OFFSET, UNUSABLE_SHAFT_LENGTH, -MOTOR_BOX_HEIGHT/2])
   cube([MOTOR_BOX_WIDTH, MOTOR_BOX_DEPTH, MOTOR_BOX_HEIGHT]);
 
-  translate([-9.3,4,-9.1])
+  // 9.3 -> 8.9
+  translate([-8.9,4,-9.1])
   rotate([90,0,0])
   cylinder(h=5.5, r=m3radius);
   
-  translate([-9.3,4,9.1])
+  // 9.3 -> 8.9
+  translate([-8.9,4,9.1])
   rotate([90,0,0])
   cylinder(h=5.5, r=m3radius);
   
@@ -92,28 +107,13 @@ module motor_box() {
   cylinder(h=5.5, r=m3radius);
 }
 
-module shaft() {
-  difference() {
-    translate([0,UNUSABLE_SHAFT_LENGTH,0])
-    rotate([90,0,0])
-    cylinder(h=USABLE_SHAFT_LENGTH + UNUSABLE_SHAFT_LENGTH,r=SHAFT_DIAMETER/2);
-    translate([2,-USABLE_SHAFT_LENGTH,-3])
-    cube([3,USABLE_SHAFT_LENGTH,6]);
-  }
-}
-
-module shaft(usableLength, unusableLength, diameter) {
+module shaft(usableLength, unusableLength, diameter, flatPartOffset=1.7) {
   difference() {
     translate([0,unusableLength,0])
     rotate([90,0,0])
     cylinder(h=usableLength + unusableLength,r=diameter/2);
-    translate([2,-usableLength,-3])
-    cube([3,usableLength,6]);
+    //
+    translate([flatPartOffset,-usableLength-.001,-3])
+    cube([3,usableLength+.001,6]);
   }
-}
-
-module arrow() {
-  rotate([90,0,0])
-  linear_extrude(2)
-  polygon([[0,0],[-1,0],[0,1],[1,0],[0,0]]);
 }
