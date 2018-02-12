@@ -1,0 +1,42 @@
+states: STOPPED,
+  FORWARD,
+  SLOWING,
+  TURNING_LEFT,
+  TURNING_RIGHT,
+  REVERSING,
+  SWIVELING_LEFT,
+  SWIVELING_RIGHT
+
+
+
+currentState
+stateStartTime
+
+setup:
+  currentState=STOPPED
+  // enter state?
+
+  stateStartTime = now
+
+loop:
+  if button press
+    newState = handleButtonPress(state)
+    if currentState != newState
+      currentState = newState
+      enterNewState(currentState)
+
+  if closeToObject
+    newState = handleProximityAlert
+    if currentState != newState
+      currentState = newState
+      enterNewState(currentState)
+
+  newState = handleElapsedTime(now - stateStartTime)
+  if currentState != newState
+    currentState = newState
+    enterNewState(currentState)
+
+
+
+enterNewState
+  reset time
