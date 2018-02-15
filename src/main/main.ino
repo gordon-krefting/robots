@@ -11,10 +11,10 @@ const int buttonPin = 4;
 const int onLedPin  = 12;
 const int offLedPin = 13;
 
-const int leftWheelForwardPin  = 5;
-const int leftWheelReversePin  = 6;
-const int rightWheelForwardPin = 9;
-const int rightWheelReversePin = 10;
+const int leftWheelReversePin  = 5;
+const int leftWheelForwardPin  = 6;
+const int rightWheelReversePin = 9;
+const int rightWheelForwardPin = 10;
 
 const int rangingTriggerPin = 7;
 const int rangingEchoPin    = 8;
@@ -75,10 +75,7 @@ void loop() {
 
   float duration = pulseIn(rangingEchoPin, HIGH);
   float distance = (duration*.0343)/2;
-  if (distance < 100.0) {
-    Serial.print("Distance: ");
-    Serial.println(distance);
-  }
+  changeState(handleDetectObject(distance));
 
   // time in state?
   int timeInState = millis() - lastStateInitTime;
@@ -103,6 +100,28 @@ state handleButtonPress() {
     default:
       return STOPPED;
   }
+}
+
+state handleDetectObject(float distance) {
+  if (distance < 100) {
+    Serial.print("Object at: ");
+    Serial.print(distance);
+    Serial.println("cm");
+  }
+  switch(currentState) {
+    case RUNNING:
+      if (distance < 20) {
+        return SWIVEL_LEFT;
+      }
+      break;
+    case SWIVEL_LEFT:
+      if (distance > 40) {
+        return RUNNING;
+      }
+      break;
+  }
+  return currentState;  
+
 }
 
 state handleTimeout() {
@@ -132,6 +151,15 @@ void initState() {
       rightWheelForward();
       stateTimeout = 5000;
       break;
+    case SWIVEL_LEFT:
+      leftWheelReverse();
+      rightWheelReverse();
+      delay(2000);
+      leftWheelReverse();
+      rightWheelForward();
+      delay(2000);
+      stateTimeout = 5000;
+      break;
     case REVERSING:
       leftWheelReverse();
       rightWheelReverse();
@@ -149,6 +177,7 @@ void leaveState() {
       digitalWrite(onLedPin, HIGH);
       break;
     case REVERSING:
+    case SWIVEL_LEFT:
     case RUNNING:
       leftWheelStop();
       rightWheelStop();
@@ -161,38 +190,39 @@ char * stateName() {
     case STOPPED: return "STOPPED";
     case RUNNING: return "RUNNING";
     case REVERSING: return "REVERSING";
+    case SWIVEL_LEFT: return "SWIVEL_LEFT";
     default: return "Unknown";
   }
 }
 
 void leftWheelForward() {
-  digitalWrite(leftWheelForwardPin, HIGH);
-  digitalWrite(leftWheelReversePin, LOW);
+  analogWrite(leftWheelForwardPin, 255);
+  analogWrite(leftWheelReversePin, 0);
 }
 
 void leftWheelReverse() {
-  digitalWrite(leftWheelForwardPin, LOW);
-  digitalWrite(leftWheelReversePin, HIGH);
+  analogWrite(leftWheelForwardPin, 0);
+  analogWrite(leftWheelReversePin, 255);
 }
 
 void leftWheelStop() {
-  digitalWrite(leftWheelForwardPin, LOW);
-  digitalWrite(leftWheelReversePin, LOW);
+  analogWrite(leftWheelForwardPin, 0);
+  analogWrite(leftWheelReversePin, 0);
 }
 
 void rightWheelForward() {
-  digitalWrite(rightWheelForwardPin, HIGH);
-  digitalWrite(rightWheelReversePin, LOW);
+  analogWrite(rightWheelForwardPin, 255);
+  analogWrite(rightWheelReversePin, 0);
 }
 
 void rightWheelReverse() {
-  digitalWrite(rightWheelForwardPin, LOW);
-  digitalWrite(rightWheelReversePin, HIGH);
+  analogWrite(rightWheelForwardPin, 0);
+  analogWrite(rightWheelReversePin, 255);
 }
 
 void rightWheelStop() {
-  digitalWrite(rightWheelForwardPin, LOW);
-  digitalWrite(rightWheelReversePin, LOW);
+  analogWrite(rightWheelForwardPin, 0);
+  analogWrite(rightWheelReversePin, 0);
 }
 
 
