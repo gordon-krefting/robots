@@ -20,10 +20,10 @@ module printTest() {
 }
 
 
-translate([50,0,0])
+//translate([50,0,0])
 motor($fn=96);
 
-shaftSocket($fn=32);
+//shaftSocket($fn=32);
 
 /*
  * Draws the basic outline of the motor, sized to be subtracted from other parts.

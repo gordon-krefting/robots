@@ -1,4 +1,4 @@
-$fn = 96;
+$fn = 198;
 
 driveDiameter = 12;
 camDiameter = 20;
@@ -21,7 +21,7 @@ module print() {
   translate([25,0,0])
   drive();
   cam();
-  !translate([-30,0,2])
+  translate([-30,0,2])
   base();
 }
 

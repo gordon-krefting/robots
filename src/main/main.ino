@@ -129,6 +129,7 @@ state handleTimeout() {
   switch(currentState) {
     case RUNNING:
       return REVERSING;
+    case SWIVEL_LEFT:
     case REVERSING:
       return RUNNING;
     default:
@@ -157,8 +158,8 @@ void initState() {
       delay(2000);
       leftWheelReverse();
       rightWheelForward();
-      delay(2000);
-      stateTimeout = 5000;
+      delay(500);
+      stateTimeout = 3000;
       break;
     case REVERSING:
       leftWheelReverse();

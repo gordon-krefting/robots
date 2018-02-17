@@ -5,7 +5,7 @@ use <components/front_wheel.scad>;
 use <components/batteries.scad>;
 use <parts/mortise_tenon.scad>;
 
-$fn=32;
+$fn=128;
 
 *printTest();
 
@@ -214,7 +214,7 @@ module motors() {
   for (m = [0:1])
   mirror([0,m,0])
   translate(motorPoint)
-  renderedMotor();
+  renderedMotor(); 
 }
 
 module basePlatformShape() {
