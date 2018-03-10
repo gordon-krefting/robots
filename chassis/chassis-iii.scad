@@ -23,7 +23,7 @@ module printTest() {
 
 
 lowerPlatform();
-upperPlatform();
+!upperPlatform();
 
 motors();
 aa6();
