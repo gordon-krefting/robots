@@ -1,7 +1,7 @@
+#include <Servo.h>
+
 /*
- * main robot script
- * 
- * TODO everything!
+ * Main robot script
  * 
  * Some of this is from:
  *    http://www.arduino.cc/en/Tutorial/ButtonStateChange
