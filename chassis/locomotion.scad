@@ -8,8 +8,8 @@ shaftOffset = 2;
 slop = .5;
 
 
-*assembled();
-print();
+assembled();
+*print();
 
 module assembled() {
   drive();
