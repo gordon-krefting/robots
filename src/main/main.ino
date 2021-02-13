@@ -1,4 +1,4 @@
-#include <Servo.h>
+ #include <Servo.h>
 
 /*
  * Main robot script
@@ -17,15 +17,14 @@ const int rightWheelReversePin = 9;
 const int rightWheelForwardPin = 10;
 
 const int rangingTriggerPin = 7;
-const int rangingEchoPin    = 8;
+const int rangingEchoPin    = 7;
 
 int lastButtonState = 0;
 int lastStateInitTime = 0;
 
 int stateTimeout = 0;
 
-enum state
-{
+enum state {
   STOPPED,
   RUNNING,
   SLOWING,
@@ -65,7 +64,7 @@ void loop() {
     delay(20);
   }
   lastButtonState = buttonState;
-
+ 
   // get the distance
   digitalWrite(rangingTriggerPin, LOW); 
   delayMicroseconds(2); 
@@ -186,7 +185,7 @@ void leaveState() {
   }
 }
 
-char * stateName() {
+const char * stateName() {
   switch(currentState) {
     case STOPPED: return "STOPPED";
     case RUNNING: return "RUNNING";

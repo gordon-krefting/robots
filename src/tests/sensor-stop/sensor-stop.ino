@@ -8,11 +8,11 @@ VarSpeedServo myservo;
 
 
 void setup() {
-  myservo.attach(9);
-  myservo.write(90, 250, true);
-  myservo.write(160, 250, true);
-  myservo.write(20, 250, true);
-  myservo.write(90, 250, true);
+  myservo.attach(3);
+  myservo.write(90, 50, true);
+  myservo.write(160, 50, true);
+  myservo.write(20, 50, true);
+  myservo.write(90, 50, true);
   myservo.detach();
 } 
  

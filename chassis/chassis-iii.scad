@@ -221,7 +221,7 @@ module basePlatformShape() {
   translate([0,-width/2])
   square([length-width/2,width]);
   translate([length-width/2,0])
-  circle(width/2);
+  #circle(width/2);
 }
 
 

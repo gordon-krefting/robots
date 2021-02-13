@@ -1,8 +1,9 @@
 #include <NewPing.h>
-#include <VarSpeedServo.h> 
+#include <VarSpeedServo.h>
 
-#define PING_PIN 2
-#define SERVO_PIN 9
+#define TRIG_PIN  7
+#define ECHO_PIN  7
+#define SERVO_PIN 3
 
 #define SWEEPER_RANGE     1000
 #define SWEEPER_MIN       20
@@ -21,7 +22,7 @@ class Sweeper {
   
 public:
 
-  Sweeper() : sonar(PING_PIN, PING_PIN, SWEEPER_RANGE) {
+  Sweeper() : sonar(TRIG_PIN, ECHO_PIN, SWEEPER_RANGE) {
   }
 
   void Attach() {
