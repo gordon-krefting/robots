@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
 from os import path
+import os
 import re
+import subprocess
 import sys
 import tempfile
 
@@ -15,12 +17,16 @@ if not re.search("[.]scad$", fname):
     print(fname + " is not a .scad file")
     sys.exit()
 
-if not path.exists(fname):
+if not path.isfile(fname):
     print(fname + " does not exist")
     sys.exit()
 
 print(path.abspath(fname))
 fname = path.abspath(fname)
+outputdir = path.dirname(fname) + '/stl'
+if not path.isdir(outputdir):
+    print("Does not:" + outputdir)
+    os.mkdir(outputdir)
 
 parts = []
 with open(fname) as f:
@@ -38,15 +44,24 @@ if choice is None or choice < 1 or choice > len(parts):
     print("Choose from the choices!")
     sys.exit()
 
-print(parts[choice-1])
+partname = parts[choice-1]
 
 tfile = tempfile.NamedTemporaryFile(mode='w+t', suffix='.scad')
-print(tfile.name)
+ofile = outputdir + "/" + partname + ".stl"
+# print("Temp file: " + tfile.name)
+# print("Output file: " + ofile)
 
 try:
-    tfile.writelines('use <{}>\nprint_{}();\n'.format(fname, parts[choice-1]))
+    tfile.writelines('use <{}>\nprint_{}();\n'.format(fname, partname))
     tfile.seek(0)
-    print(tfile.read())
-    input("wait")
+    # print(tfile.read())
+    r = subprocess.run(
+        ["openscad", "--render", "-o", ofile, tfile.name],
+        stderr=subprocess.PIPE,
+        stdout=subprocess.DEVNULL,
+        text=True
+    )
+    if r.returncode:
+        print("Error: {}".format(r.stdeerr))
 finally:
     tfile.close()
