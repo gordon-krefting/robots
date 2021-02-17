@@ -40,9 +40,9 @@ servo_v_offset = 8.1;
 ***************************************************************/
 
 
-preview();
+*preview();
 module preview() {
-  !print_base_1();
+  print_base_1();
   translate([70,0])
   print_base_2();
   translate([120,0])
