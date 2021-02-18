@@ -15,7 +15,7 @@ strut_preview();
 
 finger_preview();
 
-servo_preview();
+#servo_preview();
 
 /***************************************************************
    CONSTANTS
