@@ -15,7 +15,7 @@ strut_preview();
 
 finger_preview();
 
-#servo_preview();
+servo_preview();
 
 /***************************************************************
    CONSTANTS
@@ -382,6 +382,7 @@ module servo_preview() {
   rotate([180,0,-90])
   sg90(true);
 }
+
 
 
 /***************************************************************
