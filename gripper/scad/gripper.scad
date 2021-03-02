@@ -33,7 +33,7 @@ strut_t = 5;
 strut_wall_t = 2;
 strut_spacing = 20;
 
-servo_v_offset = 8.1;
+    
 
 /***************************************************************
    PRINTABLES

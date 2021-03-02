@@ -20,12 +20,14 @@ translate([0,0,base_t]) {
 
 servo_preview();
 
-!preview();
+!adaptor();
+
+
+*preview();
 
 /***************************************************************
    PRINTABLES
 ***************************************************************/
-
 
 *preview();
 module preview() {
@@ -59,6 +61,10 @@ module print_large_gear() {
   large_gear();
 }
 
+module print_adaptor() {
+  adaptor();
+}
+
 
 
 /***************************************************************
@@ -69,39 +75,39 @@ slop = .3;
 base_t = 2;
 
 gear_height = 15;
-gear_spacing = 20.3;
+gear_spacing = 25.7;
 
 pin_diameter = 5;
 peg_diameter = 2.5;
 
-servo_v_offset = 10.2;
+servo_v_offset = 9.7;
 
 /***************************************************************
    BASE
 ***************************************************************/
-base_1_pin_locations = [[42, 0],  [4, -10],  [4, 10]];
-base_2_pin_locations = [[-6, 0],  [27, -13],  [27, 13]];
+base_1_pin_locations = [[50, 0],  [6, -12],  [6, 12]];
+base_2_pin_locations = [[-8, 0],  [31, -17],  [31, 17]];
 
 module base_1() {
     linear_extrude(base_t)
     difference() {
         union() {
             base_template();
-            translate([20,-20])
+            translate([21,-22])
             circle(4);
-            translate([20,20])
+            translate([21,22])
             circle(4);
         }
-        translate([20,-20])
+        translate([21,-22])
         circle(1.5);
-        translate([20,20])
+        translate([21,22])
         circle(1.5);
-        translate([10, 0, 0])
+        translate([11, 0, 0])
         scale([.5, 1, 1])
-        circle(11);
-        translate([31, 0, 0])
+        circle(12);
+        translate([36, 0, 0])
         scale([.5, 1, 1])
-        circle(11);
+        circle(12);
     }
     translate([0, 0, base_t])
     cylinder(2, d = pin_diameter - slop);
@@ -120,10 +126,10 @@ module base_2() {
     difference() {
         base_template();
         
-        circle(d = pin_diameter + slop);
-        translate([gear_spacing + 5, 0, 0])
-        scale([1, .7, 1])
-        circle(12);
+        circle(d = pin_diameter*2 + slop*2);
+        translate([gear_spacing + 6.5, 0, 0])
+        scale([1, .6, 1])
+        circle(14);
         
         for (p = base_1_pin_locations)
         translate([p.x, p.y, base_t])
@@ -141,20 +147,20 @@ module base_3() {
     difference() {
         base_template();
         
-        circle(d = pin_diameter + slop);
+        circle(d = pin_diameter*2 + slop*2);
         
         for (p = base_2_pin_locations)
         translate([p.x, p.y, base_t])
         peg_circle();
 
-        translate([14,-13/2,0])
-        square([23.5,13]);
-
-        translate([11.8,0])
-        circle(1.5);
-        
-        translate([40,0])
-        circle(1.5);
+        translate([5.4, 0, 0]) {
+            translate([14,-13/2,0])
+            square([23.5,13]);
+            translate([11.8,0])
+            circle(1.5);
+            translate([40,0])
+            circle(1.5);
+        }
     }
     
 }
@@ -162,9 +168,9 @@ module base_3() {
 
 module base_template() {
     hull() {
-        circle(10);
+        circle(12);
         translate([gear_spacing, 0, 0])
-        circle(19);
+        circle(21);
         translate(base_1_pin_locations[0])
         circle(5);
     }
@@ -175,19 +181,20 @@ module base_template() {
 /***************************************************************
    GEARS
 ***************************************************************/
-tooth_count = 11;
+tooth_count = 14;
 
 module small_gear() {
-    rotate([0,0,8])
-    gear_template(tooth_count, 17.5);
+    rotate([0,0,0])
+    gear_template(tooth_count, 20.5);
     difference() {
         translate([0, 0, gear_height])
-        cylinder(h = 37, d = pin_diameter);
-        translate([1, -2.5, gear_height + 32.001])
-        cube(5);
+        cylinder(h = 35, d = pin_diameter*2);
+        
+        translate([2, -5, gear_height + 32.001])
+        cube(10);
 
-        translate([-6, -2.5, gear_height + 32.001])
-        cube(5);
+        translate([-12, -5, gear_height + 32.001])
+        cube(10);
     }
 }
 
@@ -198,16 +205,17 @@ module large_gear() {
         union () {
             translate([0, 0, gear_height])
             rotate([180, 0, 0])
-            gear_template(tooth_count * 2, 30);
+            gear_template(tooth_count * 2, 37);
             
-            translate([12,0,0])
+            translate([14,0,0])
             scale([1, .6, 1])
-            cylinder(gear_height, r = 6);
+            cylinder(gear_height, r = 7);
         }
         
         translate([0,0,2-.001])
         rotate([180,0,0])
         scale([1,1,1.5])
+        scale(1.15)
         sg90_arm1_negative();
     }
 }
@@ -225,6 +233,35 @@ module gear_template(t, roundover_factor) {
         scale([1, 1, 1.5])
         sphere(d = roundover_factor);
     }
+}
+
+// connects wrist to gripper (14.3-8.9)
+module adaptor() {
+    cube_dim = [14, 25, 8];
+    difference() {
+        translate([-cube_dim.x/2, -cube_dim.y/2, 0])
+        cube(cube_dim);
+        
+        translate([0,0,-.001])
+        difference() {
+            cylinder(h = 4, d = pin_diameter*2 + slop);
+            
+            translate([2 + slop/2, -5, .001])
+            cube(10);
+
+            translate([-12 - slop/2, -5, .001])
+            cube(10);
+        }
+        cube2_dim = [8.9+slop, cube_dim.y + .001, 5+.001];
+        translate([-cube2_dim.x/2, -cube2_dim.y/2, 3])
+        difference() {
+            cube(cube2_dim);
+        }
+    }
+    translate([-2.4, -25/2, 3])
+    cube([4.8, 6, 5]);
+    translate([-2.4, 25/2-6, 3])
+    cube([4.8, 6, 5]);
 }
 
 
