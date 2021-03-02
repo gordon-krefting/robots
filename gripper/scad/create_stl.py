@@ -63,7 +63,10 @@ if __name__ == "__main__":
         sys.exit()
 
     fname = path.abspath(fname)
-    outputdir = path.dirname(fname) + '/stl'
+
+    fname_part = os.path.splitext(os.path.basename(fname))[0]
+
+    outputdir = path.dirname(fname) + '/' + fname_part + '_stl'
     if not path.isdir(outputdir):
         print("Does not:" + outputdir)
         os.mkdir(outputdir)
