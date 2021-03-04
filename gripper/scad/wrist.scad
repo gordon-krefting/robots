@@ -20,7 +20,7 @@ translate([0,0,base_t]) {
 
 servo_preview();
 
-!adaptor();
+*adaptor();
 
 
 *preview();
