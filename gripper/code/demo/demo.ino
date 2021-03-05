@@ -18,10 +18,20 @@ void setup() {
 }
 
 void loop() {
-  int v1 = analogRead(POT_1_PIN);
-  int v2 = analogRead(POT_2_PIN);
+  int v1 = 1023 - analogRead(POT_1_PIN);
+  int v2 = 1023 - analogRead(POT_2_PIN);
   int p1 = map(v1, 0, 1023, SERVO_1_MIN, SERVO_1_MAX);
   int p2 = map(v2, 0, 1023, SERVO_2_MIN, SERVO_2_MAX);
+
+  Serial.print("pot 1: ");
+  Serial.print(v1);
+  Serial.print("  pwm 1:");
+  Serial.print(p1);
+  Serial.print("    pot 2: ");
+  Serial.print(v2);
+  Serial.print("  pwm 2:");
+  Serial.println(p2);
+
   pwm.setPWM(0, 0, p1);
   pwm.setPWM(1, 0, p2);
 }
